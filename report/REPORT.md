@@ -1,8 +1,8 @@
 # Báo cáo Day 6: Độ nhạy của LiDAR-camera projection với calibration drift
 
-- **Họ tên:** Phạm Văn Hoàng Anh Tú
+- **Họ tên:** [ĐIỀN]
 - **MSSV:** 2A202602507
-- **Lớp:** 2A202602507
+- **Lớp:** [ĐIỀN]
 - **Link repo:** https://github.com/tubepvhat1604-bot/day06-2A202602507
 - **Topic:** A — LiDAR-camera projection QA
 - **Dataset:** data/kitti_mini (20 frame), data/nuscenes_mini_subset (20 frame), data/synthetic (demo)
@@ -39,6 +39,27 @@ Nhận xét:
 
 **So sánh 2 dataset (`results/calib_drift_nuscenes_mini_subset.csv`):** trên nuScenes, yaw 1° chỉ giảm từ 80.7% xuống 80.0%, và **pitch gần như không ảnh hưởng**. Có 3 lý do: (1) hệ trục LiDAR của nuScenes là x sang phải, y hướng tới trước, nên phép "pitch quanh trục y" của `perturb_extrinsic` thực chất là **roll** quanh hướng nhìn, ít làm điểm dời khỏi box; (2) trong 20 frame không có object nào xa hơn 30 m, mà vật gần thì ít nhạy với lệch góc; (3) LiDAR 32 beam cho ít điểm trên mỗi object, và mức baseline đã thấp sẵn (80.7%) vì ảnh có độ phân giải cao hơn và có độ lệch thời gian giữa LiDAR và camera.
 
+### Bonus
+
+**B1: So sánh 2 cấu hình metric** (`results/bonus_b1_metric_v1_vs_v2.csv`). Cả 2 cấu hình chạy trên cùng 20 frame KITTI với cùng các mức lệch yaw:
+- **v1** = % tất cả điểm của object rơi vào 2D box (metric gốc).
+- **v2** = chỉ xét object có truncated < 0.5, và chỉ tính trên các điểm đã chiếu vào được ảnh. Đây là cách sửa lỗi ở failure case mục 3.
+
+| yaw | v1 trung bình % | v1: % object < 85% | v2 trung bình % | v2: % object < 85% |
+|---|---|---|---|---|
+| 0° (calib đúng) | 92.3 | 12.2 | 99.1 | **2.2** |
+| 0.5° | 83.8 | 32.7 | 89.7 | 24.7 |
+| 1° | 69.5 | 55.1 | 74.2 | 48.3 |
+| 3° | 37.5 | 83.7 | 40.5 | 78.7 |
+
+Ưu nhược điểm: v2 giảm tỉ lệ báo động giả khi calib đúng từ **12.2% xuống 2.2%**, và mức baseline gần 100% nên đặt ngưỡng dễ hơn. Đổi lại, v2 bỏ qua 9/98 object (các xe sát mép ảnh), nên có ít mẫu hơn. v1 dùng được mọi object nhưng nhiễu hơn với vật ở gần.
+
+**B3: Latency projection** (`results/bonus_b3_latency.csv`): đo `project_velo_to_image` trên frame 000011 (108k điểm), bỏ 5 lần chạy đầu, đo 50 lần, chạy trên CPU (thông tin phần cứng ghi trong CSV): **p50 = 5.4 ms, p95 = 7.7 ms**. Như vậy dư sức chạy online ở tốc độ 10 Hz của LiDAR.
+
+**B4: Tool dùng lại được:** `python -m src.calib_drift_sweep --help` (có các tham số `--data-root`, `--max-frames`, `--min-pts`, `--out-dir`).
+
+**B5: Hai dataset:** xem đoạn so sánh KITTI và nuScenes ở trên.
+
 ## 3. Failure case
 
 ![failure](../results/figures/fail_01_truncated_car_metric.png)
@@ -67,6 +88,7 @@ python -m starter.projection --data-root data/nuscenes_mini_subset --frame scene
 python -m src.calib_drift_sweep --data-root data/kitti_mini
 python -m src.calib_drift_sweep --data-root data/nuscenes_mini_subset --max-frames 20
 python -m src.make_figures
+python -m src.bonus
 python tools/check_submission.py
 ```
 
@@ -76,4 +98,4 @@ Script có tham số dòng lệnh, xem bằng `python -m src.calib_drift_sweep -
 
 | Công cụ | Dùng cho việc gì | Bạn đã kiểm chứng thế nào |
 |---|---|---|
-| Claude | Gợi ý code 2 hàm TODO (`velo_to_cam`, `cam_to_image`), script `src/calib_drift_sweep.py` và `src/make_figures.py`, viết nháp REPORT | Test điểm velodyne (10, 0, 0) cho z_cam ≈ 9.7; xem overlay trên 3 dataset thấy điểm khớp với vật thể và không có điểm trên trời; tự chạy lại sweep ra đúng số trong bảng; đọc và hiểu từng hàm |
+| Claude | Gợi ý code 2 hàm TODO (`velo_to_cam`, `cam_to_image`), script `src/calib_drift_sweep.py` và `src/make_figures.py`, `src/bonus.py`, viết nháp REPORT | Test điểm velodyne (10, 0, 0) cho z_cam ≈ 9.7; xem overlay trên 3 dataset thấy điểm khớp với vật thể và không có điểm trên trời; tự chạy lại sweep ra đúng số trong bảng; đọc và hiểu từng hàm |
