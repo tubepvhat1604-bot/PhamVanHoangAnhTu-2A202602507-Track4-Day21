@@ -3,7 +3,7 @@
 - **Họ tên:** Phạm Văn Hoàng Anh Tú
 - **MSSV:** 2A202602507
 - **Lớp:** Track 4
-- **Link repo:** https://github.com/tubepvhat1604-bot/day06-2A202602507
+- **Link repo:** https://github.com/tubepvhat1604-bot/PhamVanHoangAnhTu-2A202602507-Track4-Day21
 - **Topic:** A — LiDAR-camera projection QA
 - **Dataset:** data/kitti_mini (20 frame), data/nuscenes_mini_subset (20 frame), data/synthetic (demo)
 - **Các frame đã dùng:** toàn bộ 20 frame của kitti_mini (demo và failure: 000011); 20 frame đầu của nuscenes_mini_subset (demo: scene-0103_010)
