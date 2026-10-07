@@ -1,8 +1,8 @@
 # Báo cáo Day 6: Độ nhạy của LiDAR-camera projection với calibration drift
 
-- **Họ tên:** [ĐIỀN]
+- **Họ tên:** Phạm Văn Hoàng Anh Tú
 - **MSSV:** 2A202602507
-- **Lớp:** [ĐIỀN]
+- **Lớp:** Track 4
 - **Link repo:** https://github.com/tubepvhat1604-bot/day06-2A202602507
 - **Topic:** A — LiDAR-camera projection QA
 - **Dataset:** data/kitti_mini (20 frame), data/nuscenes_mini_subset (20 frame), data/synthetic (demo)
@@ -54,7 +54,7 @@ Nhận xét:
 
 Ưu nhược điểm: v2 giảm tỉ lệ báo động giả khi calib đúng từ **12.2% xuống 2.2%**, và mức baseline gần 100% nên đặt ngưỡng dễ hơn. Đổi lại, v2 bỏ qua 9/98 object (các xe sát mép ảnh), nên có ít mẫu hơn. v1 dùng được mọi object nhưng nhiễu hơn với vật ở gần.
 
-**B3: Latency projection** (`results/bonus_b3_latency.csv`): đo `project_velo_to_image` trên frame 000011 (108k điểm), bỏ 5 lần chạy đầu, đo 50 lần, chạy trên CPU (thông tin phần cứng ghi trong CSV): **p50 = 5.4 ms, p95 = 7.7 ms**. Như vậy dư sức chạy online ở tốc độ 10 Hz của LiDAR.
+**B3: Latency projection** (`results/bonus_b3_latency.csv`): đo `project_velo_to_image` trên frame 000011 (108k điểm), bỏ 5 lần chạy đầu, đo 50 lần, chạy trên CPU (thông tin phần cứng ghi trong CSV): **p50 = 6.3 ms, p95 = 7.45 ms**. Như vậy dư sức chạy online ở tốc độ 10 Hz của LiDAR.
 
 **B4: Tool dùng lại được:** `python -m src.calib_drift_sweep --help` (có các tham số `--data-root`, `--max-frames`, `--min-pts`, `--out-dir`).
 
